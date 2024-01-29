@@ -32,7 +32,6 @@ def client_handler(gui: Gui, state_id_list: list) -> None:
         if len(state_id_list) > 0:
             invoke_callback(gui, state_id_list[0], update_conv, [])
 
-
 def update_conv(state: State) -> None:
     """
     Read conv.txt and update the conversation table.
@@ -43,13 +42,18 @@ def update_conv(state: State) -> None:
     with open("status.txt", "r") as f:
         status = f.read()
     state.status = status
+
     with open("conv.txt", "r") as f:
         conv = f.read()
-    conversation["Conversation"] = conv.split("\n")
-    if conversation == state.conversation:
+
+    new_messages = conv.split("\n")
+    if new_messages == state.conversation["Conversation"]:
         return
-    # If the conversation has changed, update it and move to the last row
-    state.conversation = conversation
+
+    # Append new messages to the conversation
+    state.conversation["Conversation"].extend(new_messages[len(state.conversation["Conversation"]):])
+
+    # Move to the last row
     state.selected_row = [len(state.conversation["Conversation"]) - 1]
 
 
@@ -87,7 +91,7 @@ def style_conv(state: State, idx: int, row: int) -> str:
 page = """
 <|layout|columns=300px 1|
 <|part|render=True|class_name=sidebar|
-# Taipy **Jarvis**{: .color-primary} # {: .logo-text}
+# Taipy **Soro**{: .color-primary} # {: .logo-text}
 <|New Conversation|button|class_name=fullwidth plain|id=reset_app_button|on_action=erase_conv|>
 <br/>
 <|{status}|text|>
